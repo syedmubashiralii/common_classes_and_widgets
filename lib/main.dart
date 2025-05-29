@@ -7,6 +7,7 @@ import 'package:commons_classes_functions/src/internet_connectivity/internet_con
 import 'package:commons_classes_functions/src/life_cycle_manager.dart';
 import 'package:commons_classes_functions/src/permission_utils.dart';
 import 'package:commons_classes_functions/src/storage_service.dart';
+import 'package:commons_classes_functions/src/text_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -102,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
             const Text(
               'Flag Emoji Extension Example',
             ),
+             "This is from text extension".size(24).w400(),
             Text(
               "PK".toFlag.toString(),
               style: const TextStyle(fontSize: 50),

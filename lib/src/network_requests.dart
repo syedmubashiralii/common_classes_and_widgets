@@ -1,4 +1,4 @@
-import 'dart:developer';
+import 'package:commons_classes_functions/src/vibrant_dio_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:dio/io.dart';
 import 'package:dio/src/response.dart' as DioResponse;
@@ -9,11 +9,12 @@ class Requests {
 
   static Dio getDio({
     Map<String, String>? headers,
+    bool hasBearerToken = true,
     bool containHeaders = false,
     bool showLoadingDialog = true,
     bool printResponse = false,
     String loadingText = "Please wait",
-    String serverUrl = 'http://example.com',
+    String serverUrl = 'https://httpbin.org/',
     String? requestId,
     CancelToken? cancelToken, // You can pass this externally
   }) {
@@ -22,7 +23,9 @@ class Requests {
         "Accept": "application/json",
         "Content-Type": "application/json"
       };
-      headers.addAll({"Authorization": "Bearer --token"});
+      if (hasBearerToken) {
+        headers.addAll({"Authorization": "Bearer --token"});
+      }
     }
 
     final token = cancelToken ?? CancelToken();
@@ -48,31 +51,32 @@ class Requests {
 
     Dio d = Dio(options);
     var adapter = IOHttpClientAdapter();
-    d.httpClientAdapter = adapter;
+    d.interceptors.add(VibrantDioLogger(
+      enabled: kDebugMode,
+      request: true,
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      error: true,
+    ));
 
     d.interceptors.add(InterceptorsWrapper(
-      onRequest: (RequestOptions options, RequestInterceptorHandler handler) async {
-        var url = "${options.baseUrl}${options.path}";
-        if (kDebugMode) log("Requesting: $url");
-
+      onRequest:
+          (RequestOptions options, RequestInterceptorHandler handler) async {
         if (showLoadingDialog) {
           // Show loading dialog
         }
-
         options.cancelToken = token;
         return handler.next(options);
       },
-      onResponse: (DioResponse.Response response, ResponseInterceptorHandler handler) async {
+      onResponse: (DioResponse.Response response,
+          ResponseInterceptorHandler handler) async {
         if (showLoadingDialog) {
           // Dismiss loading
         }
 
         if (requestId != null) {
           _activeRequests.remove(requestId);
-        }
-
-        if (kDebugMode && printResponse) {
-          log("Response: ${response.data}");
         }
 
         return handler.next(response);
@@ -81,15 +85,9 @@ class Requests {
         if (showLoadingDialog) {
           // Dismiss loading
         }
-
         if (requestId != null) {
           _activeRequests.remove(requestId);
         }
-
-        if (kDebugMode) {
-          log("Dio error: ${e.response?.data}");
-        }
-
         return handler.next(e);
       },
     ));

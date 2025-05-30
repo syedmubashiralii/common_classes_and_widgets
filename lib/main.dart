@@ -5,6 +5,7 @@ import 'package:commons_classes_functions/src/flag_extension.dart';
 import 'package:commons_classes_functions/src/http_overrides.dart';
 import 'package:commons_classes_functions/src/internet_connectivity/internet_connectivity_listener.dart';
 import 'package:commons_classes_functions/src/life_cycle_manager.dart';
+import 'package:commons_classes_functions/src/network_requests.dart';
 import 'package:commons_classes_functions/src/permission_utils.dart';
 import 'package:commons_classes_functions/src/storage_service.dart';
 import 'package:commons_classes_functions/src/text_extension.dart';
@@ -129,6 +130,13 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 },
                 child: Text("Permission Util Example")),
+
+
+                ElevatedButton(
+                onPressed: () async {
+                 Requests.getDio(printResponse: true).get("get");
+                },
+                child: Text("Network Request")),
           ],
         ),
       ),
